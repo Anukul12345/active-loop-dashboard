@@ -1,4 +1,3 @@
-
 // Type definitions for fitness app
 
 // User related types
@@ -51,3 +50,32 @@ export interface ChartData {
 }
 
 export type WorkoutFormData = Omit<Workout, "id" | "userId">;
+
+// Tutorial related types
+export interface Tutorial {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  category: 'strength' | 'cardio' | 'flexibility';
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  isBookmarked?: boolean;
+}
+
+// Blog related types
+export interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  category: 'diet' | 'training' | 'wellness' | 'motivation';
+  author: string;
+  date: string;
+  readTime: number;
+}
+
+// Contact form type
+export interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+}

@@ -13,6 +13,9 @@ import WorkoutList from "@/pages/Workouts/WorkoutList";
 import WorkoutDetail from "@/pages/Workouts/WorkoutDetail";
 import WorkoutForm from "@/pages/Workouts/WorkoutForm";
 import UserProfile from "@/pages/Profile/UserProfile";
+import TutorialsPage from "@/pages/Tutorials/TutorialsPage";
+import BlogPage from "@/pages/Blog/BlogPage";
+import ContactPage from "@/pages/Contact/ContactPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +41,9 @@ const App = () => (
               <Route path="workouts/new" element={<WorkoutForm />} />
               <Route path="workouts/edit/:id" element={<WorkoutForm />} />
               <Route path="profile" element={<UserProfile />} />
+              <Route path="tutorials" element={<TutorialsPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="contact" element={<ContactPage />} />
             </Route>
             
             {/* 404 Route */}

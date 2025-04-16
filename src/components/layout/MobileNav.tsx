@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Dumbbell, UserCircle, Plus } from "lucide-react";
+import { Home, Dumbbell, UserCircle, Plus, BookOpen, Newspaper, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MobileNav: React.FC = () => {
@@ -26,6 +26,21 @@ const MobileNav: React.FC = () => {
       primary: true,
     },
     {
+      label: "Tutorials",
+      icon: BookOpen,
+      href: "/tutorials",
+    },
+    {
+      label: "Blog",
+      icon: Newspaper,
+      href: "/blog",
+    },
+    {
+      label: "Contact",
+      icon: Mail,
+      href: "/contact",
+    },
+    {
       label: "Profile",
       icon: UserCircle,
       href: "/profile",
@@ -34,7 +49,7 @@ const MobileNav: React.FC = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
-      <div className="grid grid-cols-4 h-16">
+      <div className="grid grid-cols-7 h-16">
         {navItems.map((item) => (
           <Link
             key={item.href}
