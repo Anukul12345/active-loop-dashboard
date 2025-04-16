@@ -33,6 +33,15 @@ const Navbar: React.FC = () => {
           <Link to="/workouts" className="text-gray-600 hover:text-fitness-primary font-medium">
             Workouts
           </Link>
+          <Link to="/tutorials" className="text-gray-600 hover:text-fitness-primary font-medium">
+            Tutorials
+          </Link>
+          <Link to="/blog" className="text-gray-600 hover:text-fitness-primary font-medium">
+            Blog
+          </Link>
+          <Link to="/contact" className="text-gray-600 hover:text-fitness-primary font-medium">
+            Contact
+          </Link>
           <Link to="/profile" className="text-gray-600 hover:text-fitness-primary font-medium">
             Profile
           </Link>
