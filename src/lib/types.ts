@@ -1,3 +1,4 @@
+
 // Type definitions for fitness app
 
 // User related types
@@ -25,6 +26,7 @@ export interface WorkoutStats {
   totalDuration: number; 
   totalCalories: number;
   workoutsByType: Record<string, number>;
+  averageCalories: number;
 }
 
 // Auth context types

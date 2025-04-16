@@ -1,27 +1,32 @@
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { getWorkouts } from "@/lib/api";
+import { getWorkouts, createWorkout } from "@/lib/api";
 import { Workout, WorkoutStats } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Flame, Activity, TrendingUp } from "lucide-react";
-import { format, parseISO, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
+import { Plus, Flame, Activity, TrendingUp, Loader2 } from "lucide-react";
+import { format, parseISO, startOfWeek, endOfWeek } from "date-fns";
 import WorkoutCaloriesChart from "@/components/Charts/WorkoutCaloriesChart";
 import WorkoutTypeChart from "@/components/Charts/WorkoutTypeChart";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [newWorkout, setNewWorkout] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [stats, setStats] = useState<WorkoutStats>({
     totalWorkouts: 0,
     totalDuration: 0,
     totalCalories: 0,
     workoutsByType: {},
+    averageCalories: 0,
   });
 
   useEffect(() => {
@@ -66,6 +71,78 @@ const Dashboard: React.FC = () => {
       workoutsByType,
       averageCalories,
     });
+  };
+
+  const handleAddWorkout = async () => {
+    if (!newWorkout.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter workout details",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Parse basic workout details from text
+      // Format: [Type] for [Duration] minutes, burned [Calories] calories
+      let workoutType = "Other";
+      let duration = 30;
+      let calories = 200;
+      
+      // Try to extract workout type
+      const typeMatch = newWorkout.match(/^(Running|Walking|Cycling|Swimming|Weightlifting|HIIT|Yoga|Pilates|CrossFit|Hiking|Dancing)/i);
+      if (typeMatch) {
+        workoutType = typeMatch[0];
+      }
+      
+      // Try to extract duration
+      const durationMatch = newWorkout.match(/(\d+)\s*min/i);
+      if (durationMatch) {
+        duration = parseInt(durationMatch[1], 10);
+      }
+      
+      // Try to extract calories
+      const caloriesMatch = newWorkout.match(/(\d+)\s*cal/i);
+      if (caloriesMatch) {
+        calories = parseInt(caloriesMatch[1], 10);
+      }
+      
+      const newWorkoutData = {
+        type: workoutType,
+        duration: duration,
+        calories: calories,
+        date: new Date().toISOString(),
+        notes: newWorkout
+      };
+      
+      const createdWorkout = await createWorkout(newWorkoutData);
+      
+      // Update local state
+      setWorkouts(prev => [createdWorkout, ...prev]);
+      calculateStats([createdWorkout, ...workouts]);
+      setNewWorkout("");
+      
+      toast({
+        title: "Success",
+        description: "Workout added successfully",
+      });
+    } catch (error) {
+      console.error("Error adding workout:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add workout",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const navigateToWorkoutForm = () => {
+    navigate("/workouts/new");
   };
 
   if (loading) {
@@ -180,15 +257,37 @@ const Dashboard: React.FC = () => {
           <CardContent>
             <div className="space-y-4">
               <Textarea
-                placeholder="Enter workout details..."
+                placeholder="Enter workout details... (e.g. 'Running for 30 min, 300 cal')"
                 value={newWorkout}
                 onChange={(e) => setNewWorkout(e.target.value)}
                 className="min-h-[150px]"
               />
-              <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Workout
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                  onClick={handleAddWorkout}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Quick Add
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={navigateToWorkoutForm}
+                >
+                  Detailed Form
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
